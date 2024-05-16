@@ -33,3 +33,7 @@ This project includes a set of Java classes designed to scrape, process, and sto
 4. Run the main folder.
 5. A file named "restaurants.ndjson.gz" will automatically be generated and contain the restaurant and its details extract.
 6. Meta data would be printed in the console.
+
+### Some Key Points
+1. Run this when the majority of restaurants are online as the filter to check those restaurants that are inactive needs to be added.
+2. Be responsible with API and not increase the page size by a lot.
