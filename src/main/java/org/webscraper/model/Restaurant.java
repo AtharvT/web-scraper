@@ -3,9 +3,9 @@ package org.webscraper.model;
 import java.util.Optional;
 
 /**
- * Record that encapsulates information about a restaurant.
- * It includes basic details such as name, cuisine, rating, and more,
- * with validation to ensure data integrity.
+ * Record representing a restaurant with various attributes.
+ * Automatically provides implementations of equals(), hashCode(), and toString()
+ * that take into account all fields, including Optional types.
  */
 public record Restaurant(
         String name,
@@ -48,3 +48,4 @@ public record Restaurant(
         }
     }
 }
+
