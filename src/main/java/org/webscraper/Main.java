@@ -1,46 +1,51 @@
 package org.webscraper;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import okhttp3.OkHttpClient;
+import org.webscraper.api.RestaurantScraper;
 import org.webscraper.client.Client;
 import org.webscraper.client.GrabApiClient;
 import org.webscraper.exceptions.ScrapingException;
+import org.webscraper.model.Payload;
 import org.webscraper.model.Restaurant;
-import org.webscraper.service.MultiLocationScraper;
-import org.webscraper.service.RestaurantScraper;
+import org.webscraper.service.MultiLocationScrapingService;
 import org.webscraper.utils.FileUtil;
-
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
-        List<String> payloads = Arrays.asList(
-                "{\"latlng\":\"1.396364,103.747462\",\"keyword\":\"\",\"offset\":0,\"pageSize\":32,\"countryCode\":\"SG\"}",  // Choa Chu Kang
-                "{\"latlng\":\"1.367476,103.858326\",\"keyword\":\"\",\"offset\":0,\"pageSize\":32,\"countryCode\":\"SG\"}"  // Ang Mo Kio
-        );
-
-        List<String> locations = Arrays.asList(
-                "Chong Boon Dental Surgery - Block 456 Ang Mo Kio Avenue 10, #01-1574,Singapore,560456",
-                "PT Singapore - Choa Chu Kang North 6, Singapore, 689577"
+    public static void main(String[] args) {
+        List<Payload> payloads = Arrays.asList(
+                new Payload("1.396364,103.747462", "", 0, 32, "SG"), // Choa Chu Kang
+                new Payload("1.367476,103.858326", "", 0, 32, "SG")  // Ang Mo Kio
         );
 
         OkHttpClient httpClient = new OkHttpClient();
-        Client client = new GrabApiClient(httpClient);
+        ObjectMapper objectMapper = new ObjectMapper();
+        Client client = new GrabApiClient(httpClient, objectMapper);
 
-        RestaurantScraper restaurantScraper = new RestaurantScraper(client);
-        MultiLocationScraper multiLocationScraper = new MultiLocationScraper(client);
+        MultiLocationScrapingService multiLocationScrapingService = new MultiLocationScrapingService(client, objectMapper);
+        RestaurantScraper restaurantScraper = new RestaurantScraper(multiLocationScrapingService, new HashMap<>());
 
+        multiLocationScrapingService.startService(); // Start the scraping service
         Set<Restaurant> restaurants = new HashSet<>();
 
         try {
-            restaurants = multiLocationScraper.scrapeLocations(locations, payloads);
-        } catch (ScrapingException e) {
-            throw new RuntimeException(e);
+            restaurants = restaurantScraper.scrapeLocations(payloads);
+            // Optionally, display estimated fee and time or process the results further
+            // restaurantScraper.showEstimatedFeeTime("someRestaurantId");
+        } catch (ScrapingException | InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new RuntimeException("Failed during scraping operations", e);
+        } finally {
+            try {
+                multiLocationScrapingService.stopService(); // Ensure to stop the service even if an exception occurs
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                System.err.println("Failed to stop the scraping service properly.");
+            }
         }
 
+        // Save data or handle it as required
         FileUtil.saveDataAsGzipNdjson(restaurants, "restaurants.ndjson.gz");
     }
 }
