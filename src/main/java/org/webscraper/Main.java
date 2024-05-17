@@ -31,8 +31,6 @@ public class Main {
 
         try {
             restaurants = restaurantScraper.scrapeLocations(payloads);
-            // Optionally, display estimated fee and time or process the results further
-            // restaurantScraper.showEstimatedFeeTime("someRestaurantId");
         } catch (ScrapingException | InterruptedException e) {
             Thread.currentThread().interrupt();
             throw new RuntimeException("Failed during scraping operations", e);
@@ -45,7 +43,6 @@ public class Main {
             }
         }
 
-        // Save data or handle it as required
         FileUtil.saveDataAsGzipNdjson(restaurants, "restaurants.ndjson.gz");
     }
 }

@@ -191,5 +191,4 @@ public class MetaData {
         return closingSoonTextNotNullCount;
     }
 
-    // Other methods for aggregation and reporting
 }

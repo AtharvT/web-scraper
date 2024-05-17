@@ -7,7 +7,6 @@ public class Payload {
     private int pageSize;
     private String countryCode;
 
-    // Default constructor
     public Payload() {
     }
 

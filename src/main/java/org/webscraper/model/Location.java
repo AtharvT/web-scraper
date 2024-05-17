@@ -5,7 +5,6 @@ package org.webscraper.model;
  * Records in Java provide a concise way to create immutable data objects.
  */
 public record Location(double latitude, double longitude, String countryCode) {
-    // Java records automatically handle the constructor, getter methods, equals(), hashCode(), and toString().
 
     /**
      * Creates a new Location with specified latitude, longitude, and country code.

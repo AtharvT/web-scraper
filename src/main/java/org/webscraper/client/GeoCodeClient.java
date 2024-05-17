@@ -46,7 +46,6 @@ public class GeoCodeClient extends Client {
 
     @Override
     public Response makeRequest(Payload payload) {
-        // Implement if necessary, or remove if not used.
         return null;
     }
 }
